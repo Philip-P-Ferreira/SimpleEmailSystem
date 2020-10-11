@@ -8,6 +8,8 @@ public class TcpStream {
     private DataOutputStream outputStream;
     private BufferedReader inputStream;
 
+    public TcpStream() {};
+    
     public TcpStream(String serverAddress, int port) throws IOException {
         socket = new Socket(serverAddress, port);
         outputStream = new DataOutputStream(socket.getOutputStream());
