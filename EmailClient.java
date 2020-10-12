@@ -1,3 +1,4 @@
+import static utils.ClientHelper.*;
 import static utils.EmailProtocol.*;
 
 import java.io.*;
@@ -13,48 +14,55 @@ public class EmailClient {
   ;
 
   public static void main(String[] args) throws InterruptedException {
+    // create a console scanner, get username for seesion
     Scanner console = new Scanner(System.in);
     System.out.print("\nEnter username to log in: ");
     String username = console.nextLine();
 
+    // create a new client stream
     TcpStream clientStream = new TcpStream();
     boolean session = false;
 
+    // attempt to connect to the server
     try {
       clientStream = new TcpStream(SERVER_ADDRESS, PORT);
-      sendProtocolMessage(clientStream, LOG_IN, USERNAME_KEY, username);
+      logUserIn(clientStream, username);
       System.out.println("Logged in as user: " + username);
 
       session = true;
+
     } catch (IOException e) {
       System.out.println(
           "\nFailed to connect to server. Check IP address and try again\n");
     }
 
+    // user chooses command, handle accordinly
+    // if error, just catch and exit
     try {
       while (session) {
         switch (getUserCommand(console)) {
         case FETCH_EMAILS:
-          // method to retrieve mail
-
+          displayEmails(clientStream);
           break;
+
         case SEND_EMAIL:
-          // method to compose and send new email
-
+          composeEmail(clientStream, console, username);
           break;
+
         case LOG_OUT:
-          // method for logging out and closing connections
-          sendProtocolMessage(clientStream, LOG_OUT);
+          System.out.println("Logging out... \n");
+          logUserOut(clientStream);
           session = false;
           break;
         }
       }
 
     } catch (IOException e) {
-      System.out.println("Unable to reach server.");
+      System.out.println("Unable to reach server.\n");
     }
   }
 
+  // method for getting user command from console
   public static COMMANDS getUserCommand(Scanner input) {
 
     int commandNum = -1;
@@ -70,6 +78,7 @@ public class EmailClient {
       System.out.println("\n1. Send Mail\n2. Read Mail\n3. Exit");
       System.out.println("Select a command (input the corresponding number)");
 
+      // input validation, repeat if invalid
       while (!validInput) {
         String inputStr = input.nextLine();
         if (inputStr.length() == 1) {
@@ -84,6 +93,37 @@ public class EmailClient {
         }
       }
     }
+    System.out.println(); // pad output with an extra line
     return COMMAND_LIST[commandNum - 1];
+  }
+
+  // method for fetching the list of emails, prints each email to console
+  public static void displayEmails(TcpStream stream) throws IOException {
+    ArrayList<Email> emailList = fetchEmails(stream);
+
+    if (emailList.size() == 0) {
+      System.out.println("Inbox is empty.");
+    } else {
+      System.out.println("Displaying all messages...");
+
+      for (final Email email : emailList) {
+        System.out.println("\nFrom: " + email.to);
+        System.out.println(email.body);
+      }
+    }
+  }
+
+  // method for composing and email and sending it to the server, addressed from
+  // user
+  public static void composeEmail(TcpStream stream, Scanner input, String user)
+      throws IOException {
+    System.out.print("To: ");
+    String toUser = input.nextLine();
+
+    System.out.print("Body text: ");
+    String bodyText = input.nextLine();
+
+    Email emailToSend = new Email(toUser, user, bodyText);
+    sendEmail(stream, emailToSend);
   }
 }
