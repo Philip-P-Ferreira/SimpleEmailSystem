@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.*;
 
 public class EmailProtocol {
-
   // constants used in server and client
   public static final String COMMAND_KEY = "type";
   public static final String PAIR_DELIM = "&";
-  public static final String OK_STATUS = "status: ok";
+  public static final String STATUS_KEY = "status";
+  public static final String STATUS_OK_VALUE = "ok";
   public static final String EMAIL_DELIM = "ZZZ";
   public static final String PAIR_SEPARATOR = "=";
 
@@ -40,8 +40,8 @@ public class EmailProtocol {
    * @param separator - breaks pair into key and value
    * @return
    */
-  public static HashMap<String, String>
-  createProtocolMap(String str, String delimiter, String separator) {
+  public static HashMap<String, String> createProtocolMap(
+      String str, String delimiter, String separator) {
     String argArr[] = str.split(delimiter);
     HashMap<String, String> map = new HashMap<>();
 
@@ -66,11 +66,10 @@ public class EmailProtocol {
    * @param arg - actual argument
    * @throws IOException
    */
-  public static void sendProtocolMessage(TcpStream stream, String type,
-                                         String argName, String arg)
+  public static void sendProtocolMessage(TcpStream stream, String type, String argName, String arg)
       throws IOException {
-    stream.write(COMMAND_KEY + PAIR_SEPARATOR + type + PAIR_DELIM + argName +
-                 PAIR_SEPARATOR + arg + '\n');
+    stream.write(
+        COMMAND_KEY + PAIR_SEPARATOR + type + PAIR_DELIM + argName + PAIR_SEPARATOR + arg + '\n');
   }
 
   /**
@@ -80,8 +79,7 @@ public class EmailProtocol {
    * @param type
    * @throws IOException
    */
-  public static void sendProtocolMessage(TcpStream stream, String type)
-      throws IOException {
+  public static void sendProtocolMessage(TcpStream stream, String type) throws IOException {
     stream.write(COMMAND_KEY + PAIR_SEPARATOR + type + '\n');
   }
 
@@ -95,8 +93,8 @@ public class EmailProtocol {
    * @param arg - unpaired argument to send
    * @throws IOException
    */
-  public static void sendProtocolMessage(TcpStream stream, String type,
-                                         String arg) throws IOException {
+  public static void sendProtocolMessage(TcpStream stream, String type, String arg)
+      throws IOException {
     stream.write(COMMAND_KEY + PAIR_SEPARATOR + type + PAIR_DELIM + arg + '\n');
   }
 }

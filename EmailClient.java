@@ -1,5 +1,5 @@
-import static utils.ClientHelper.*;
 import static utils.EmailProtocol.*;
+import static utils.client.ClientHelper.*;
 
 import java.io.*;
 import java.util.*;
@@ -13,49 +13,44 @@ public class EmailClient {
   }
   ;
 
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) {
     // create a console scanner, get username for seesion
     Scanner console = new Scanner(System.in);
     System.out.print("\nEnter username to log in: ");
     String username = console.nextLine();
 
     // create a new client stream
-    TcpStream clientStream = new TcpStream();
+    TcpStream clientStream = null;
     boolean session = false;
 
-    // attempt to connect to the server
+    // try catch block to handle any IOException
     try {
       clientStream = new TcpStream(SERVER_ADDRESS, PORT);
       logUserIn(clientStream, username);
-      System.out.println("Logged in as user: " + username);
 
+      System.out.println("Logged in as user: " + username);
       session = true;
 
-    } catch (IOException e) {
-      System.out.println(
-          "\nFailed to connect to server. Check IP address and try again\n");
-    }
-
-    // user chooses command, handle accordinly
-    // if error, just catch and exit
-    try {
+      // user chooses command, handle accordinly
+      // if error, just catch and exit
       while (session) {
         switch (getUserCommand(console)) {
-        case FETCH_EMAILS:
-          displayEmails(clientStream);
-          break;
+          case FETCH_EMAILS:
+            displayEmails(clientStream);
+            break;
 
-        case SEND_EMAIL:
-          composeEmail(clientStream, console, username);
-          break;
+          case SEND_EMAIL:
+            composeEmail(clientStream, console, username);
+            break;
 
-        case LOG_OUT:
-          System.out.println("Logging out... \n");
-          logUserOut(clientStream);
-          session = false;
-          break;
+          case LOG_OUT:
+            System.out.println("Logging out... \n");
+            logUserOut(clientStream);
+            session = false;
+            break;
         }
       }
+      clientStream.close();
 
     } catch (IOException e) {
       System.out.println("Unable to reach server.\n");
@@ -64,13 +59,11 @@ public class EmailClient {
 
   // method for getting user command from console
   public static COMMANDS getUserCommand(Scanner input) {
-
     int commandNum = -1;
     boolean validInput = false;
 
     // for easy indexing and returning
-    COMMANDS COMMAND_LIST[] = {COMMANDS.SEND_EMAIL, COMMANDS.FETCH_EMAILS,
-                               COMMANDS.LOG_OUT};
+    COMMANDS COMMAND_LIST[] = {COMMANDS.SEND_EMAIL, COMMANDS.FETCH_EMAILS, COMMANDS.LOG_OUT};
 
     // loop as long as input isn't valid
     while (!validInput) {
@@ -81,13 +74,9 @@ public class EmailClient {
       // input validation, repeat if invalid
       while (!validInput) {
         String inputStr = input.nextLine();
-        if (inputStr.length() == 1) {
-          commandNum = inputStr.charAt(0) - '0';
-          if (commandNum > 0 && commandNum < 4) {
-            validInput = true;
-          } else {
-            System.out.println("\nInvalid number. Try again");
-          }
+        commandNum = inputStr.charAt(0) - '0';
+        if (inputStr.length() == 1 && commandNum > 0 && commandNum < 4) {
+          validInput = true;
         } else {
           System.out.println("\nInvalid input. Try again");
         }
@@ -115,8 +104,7 @@ public class EmailClient {
 
   // method for composing and email and sending it to the server, addressed from
   // user
-  public static void composeEmail(TcpStream stream, Scanner input, String user)
-      throws IOException {
+  public static void composeEmail(TcpStream stream, Scanner input, String user) throws IOException {
     System.out.print("To: ");
     String toUser = input.nextLine();
 

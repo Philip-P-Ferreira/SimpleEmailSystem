@@ -1,8 +1,9 @@
-package utils;
+package utils.client;
 import static utils.EmailProtocol.*;
 
 import java.io.*;
 import java.util.*;
+import utils.*;
 
 public class ClientHelper {
   /**
@@ -15,8 +16,7 @@ public class ClientHelper {
    * @return - server response
    * @throws IOException
    */
-  public static String logUserIn(TcpStream stream, String user)
-      throws IOException {
+  public static String logUserIn(TcpStream stream, String user) throws IOException {
     sendProtocolMessage(stream, LOG_IN, USERNAME_KEY, user);
     return stream.read();
   }
@@ -31,8 +31,7 @@ public class ClientHelper {
    * @return - server response
    * @throws IOException
    */
-  public static String sendEmail(TcpStream stream, Email email)
-      throws IOException {
+  public static String sendEmail(TcpStream stream, Email email) throws IOException {
     sendProtocolMessage(stream, SEND_EMAIL, EMAIL_KEY, email.toString());
     return stream.read();
   }
@@ -46,15 +45,16 @@ public class ClientHelper {
    * @return - ArrayList of emails
    * @throws IOException
    */
-  public static ArrayList<Email> fetchEmails(TcpStream stream)
-      throws IOException {
+  public static ArrayList<Email> fetchEmails(TcpStream stream) throws IOException {
+    // ask for emails from server
     sendProtocolMessage(stream, RETRIEVE_EMAILS);
     String emailResponse = stream.read();
 
+    // create a map of the response and list to hold emails
     ArrayList<Email> emailList = new ArrayList<>();
-    HashMap<String, String> argMap =
-        createProtocolMap(emailResponse, PAIR_DELIM, PAIR_SEPARATOR);
+    HashMap<String, String> argMap = createProtocolMap(emailResponse, PAIR_DELIM, PAIR_SEPARATOR);
 
+    // get email value, and add all to email list
     String allEmails = argMap.get(EMAIL_LIST_KEY);
     if (allEmails.equals(EMAIL_DELIM)) {
       return emailList;
