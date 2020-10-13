@@ -34,7 +34,7 @@ public class ServerThread implements Runnable {
             createProtocolMap(serverStream.read(), PAIR_DELIM, PAIR_SEPARATOR);
 
         // handle based on type
-        System.out.print("\nThread " + threadID + "->");
+        System.out.print("\nThread " + threadID + " -> ");
         switch (argMap.get(COMMAND_KEY)) {
           case LOG_IN:
             userName = argMap.get(USERNAME_KEY);
@@ -67,7 +67,7 @@ public class ServerThread implements Runnable {
       }
       serverStream.close();
     } catch (IOException e) {
-      System.out.println("Thread " + threadID + " -> Could not reach client");
+      System.out.println("\nThread " + threadID + " -> Could not reach client");
     }
   }
 
