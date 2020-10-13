@@ -22,8 +22,8 @@ public class ServerThread implements Runnable {
   // "main method" of each thread. Processes client requests
   public void run() {
     long threadID = Thread.currentThread().getId();
-    System.out.println("\nClient connected at " + serverStream.getIpAddress() + 
-    " on thread " + threadID);
+    System.out.println(
+        "\nClient connected at " + serverStream.getIpAddress() + " on thread " + threadID);
 
     String userName = "";
     boolean threadOn = true;
@@ -32,42 +32,42 @@ public class ServerThread implements Runnable {
         // extract request type
         HashMap<String, String> argMap =
             createProtocolMap(serverStream.read(), PAIR_DELIM, PAIR_SEPARATOR);
-        
+
         // handle based on type
-        System.out.print("Thread " + threadID + "->");
+        System.out.print("\nThread " + threadID + "->");
         switch (argMap.get(COMMAND_KEY)) {
           case LOG_IN:
             userName = argMap.get(USERNAME_KEY);
-            System.out.println("\nLogged in as user: " + userName);
+            System.out.println("Logged in as user: " + userName);
             sendOkAck(serverStream, LOG_IN_ACK);
             break;
 
           case SEND_EMAIL:
-            System.out.println('\n' + userName + ": sending email");
+            System.out.println(userName + ": sending email");
             emailStorage.addEmail(argMap.get(EMAIL_KEY));
             sendOkAck(serverStream, SEND_EMAIL_ACK);
             break;
 
           case RETRIEVE_EMAILS:
-            System.out.println('\n' + userName + ": fetching emails");
+            System.out.println(userName + ": fetching emails");
             sendProtocolMessage(serverStream, RETRIEVE_RESPONSE, EMAIL_LIST_KEY,
                 emailStorage.fetchEmails(userName));
             break;
 
           case LOG_OUT:
-            System.out.println('\n' + "Logging user " + userName + " out");
+            System.out.println("Logging user " + userName + " out");
             threadOn = false;
             sendOkAck(serverStream, LOG_OUT_ACK);
             break;
 
           default:
-            System.out.println('\n' + "Unrecognized command. Closing thread");
+            System.out.println("Unrecognized command. Closing thread");
             threadOn = false;
         }
       }
       serverStream.close();
     } catch (IOException e) {
-      System.out.println('\n' + "Could not reach client");
+      System.out.println("Could not reach client");
     }
   }
 
