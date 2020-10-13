@@ -96,7 +96,7 @@ public class EmailClient {
       System.out.println("Displaying all messages...");
 
       for (final Email email : emailList) {
-        System.out.println("\nFrom: " + email.to);
+        System.out.println("\nFrom: " + email.from);
         System.out.println(email.body);
       }
     }
