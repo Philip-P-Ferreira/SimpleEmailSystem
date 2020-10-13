@@ -29,12 +29,13 @@ public class ServerThread implements Runnable {
     boolean threadOn = true;
     try {
       while (threadOn) {
+        System.out.print("\nThread " + threadID + " -> ");
+
         // extract request type
         HashMap<String, String> argMap =
             createProtocolMap(serverStream.read(), PAIR_DELIM, PAIR_SEPARATOR);
 
         // handle based on type
-        System.out.print("\nThread " + threadID + "->");
         switch (argMap.get(COMMAND_KEY)) {
           case LOG_IN:
             userName = argMap.get(USERNAME_KEY);
