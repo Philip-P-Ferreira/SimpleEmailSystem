@@ -21,7 +21,9 @@ public class ServerThread implements Runnable {
 
   // "main method" of each thread. Processes client requests
   public void run() {
-    System.out.println("\nClient connected at " + serverStream.getIpAddress());
+    long threadID = Thread.currentThread().getId();
+    System.out.println("\nClient connected at " + serverStream.getIpAddress() + 
+    " on thread " + threadID);
 
     String userName = "";
     boolean threadOn = true;
@@ -30,8 +32,9 @@ public class ServerThread implements Runnable {
         // extract request type
         HashMap<String, String> argMap =
             createProtocolMap(serverStream.read(), PAIR_DELIM, PAIR_SEPARATOR);
-
+        
         // handle based on type
+        System.out.print("Thread " + threadID + "->");
         switch (argMap.get(COMMAND_KEY)) {
           case LOG_IN:
             userName = argMap.get(USERNAME_KEY);

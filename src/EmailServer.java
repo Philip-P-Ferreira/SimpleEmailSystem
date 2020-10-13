@@ -14,8 +14,6 @@ public class EmailServer {
     boolean serverOn = true;
     while (serverOn) {
       try {
-        System.out.println("\nLooking for new client");
-
         // thread created when a client connects to server
         Thread serverThread = new Thread(new ServerThread(serverSocket.accept()));
         serverThread.start();
