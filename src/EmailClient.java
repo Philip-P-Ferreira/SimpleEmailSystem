@@ -11,7 +11,6 @@ public class EmailClient {
     FETCH_EMAILS,
     LOG_OUT,
   }
-  ;
 
   public static void main(String[] args) {
     // create a console scanner, get username for seesion
